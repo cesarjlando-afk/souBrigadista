@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sou Brigadista</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon-192.png" type="image/png">
+  <style>
+    :root{
+      --red:#c81414;
+      --yellow:#ffcc00;
+      --black:#111;
+      --white:#fff;
+      --gray:#333;
+      --green:#2ecc71;
+    }
+    *{box-sizing:border-box}
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: radial-gradient(circle at top,#1a1a1a 0%, #0c0c0c 60%, #000 100%);
+      color: var(--white);
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .app {
+      width: 100%;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .card {
+      background: #1b1b1b;
+      border: 2px solid #000;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.6), inset 0 0 0 2px #000;
+      border-radius: 14px;
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(135deg, rgba(255,0,0,0.15), transparent 50%),
+        linear-gradient(45deg, rgba(255,204,0,0.12), transparent 50%);
+      pointer-events:none;
+    }
+    .brand {
+      display:flex;
+      align-items:center;
+      gap:14px;
+      margin-bottom:16px;
+    }
+    .logo {
+      width:54px; height:54px;
+      border-radius:50%;
+      background:
+        radial-gradient(circle at 55% 30%, #ff8a00 0%, #ffcc00 40%, transparent 41%),
+        radial-gradient(circle at 45% 60%, #ff3300 0%, #c81414 50%, transparent 51%);
+      border:3px solid #000;
+      box-shadow: 0 0 0 3px #ffcc00, 0 4px 10px rgba(0,0,0,0.7);
+      position:relative;
+    }
+    .logo::after{
+      content:"";
+      position:absolute;
+      bottom:8px; left:50%;
+      transform:translateX(-50%);
+      width:22px; height:10px;
+      background:#000;
+      border-radius:6px;
+    }
+    h1 {
+      margin:0;
+      font-size: 2rem;
+      letter-spacing: 0.8px;
+      color: var(--yellow);
+      text-shadow: 2px 2px #000, 0 0 12px rgba(255,204,0,0.35);
+    }
+    h2 {
+      color: var(--red);
+      text-shadow: 1px 1px #000;
+      margin: 10px 0 20px;
+      font-size: 1.4rem;
+    }
+
+    .screen { display: none; }
+    .active { display: block; }
+
+    .btn-row {
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      justify-content:center;
+      margin-top:18px;
+    }
+    button {
+      appearance:none;
+      border:none;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      cursor:pointer;
+      transition: transform .08s ease, box-shadow .2s ease, background .2s ease;
+      background: linear-gradient(180deg, #e31b1b 0%, #c81414 60%, #a50f0f 100%);
+      color: var(--white);
+      border: 2px solid #000;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.6), inset 0 -2px 0 rgba(0,0,0,0.35);
+    }
+    button:hover { transform: translateY(-2px); }
+    button:active { transform: translateY(0); }
+    .btn-secondary {
+      background: linear-gradient(180deg, #ffd84d 0%, #ffcc00 60%, #e6b800 100%);
+      color: #111;
+      border: 2px solid #000;
+    }
+    .btn-ghost {
+      background: #222;
+      color: var(--yellow);
+      border: 2px dashed #444;
+    }
+    .btn-videos {
+      background: linear-gradient(180deg, #0066cc 0%, #004499 60%, #003366 100%);
+      color: white;
+      font-weight: 700;
+      width: 100%;
+      max-width: 300px;
+      margin-top: 12px !important;
+    }
+
+    .question-box {
+      background:#171717;
+      border:1px solid #000;
+      border-radius:12px;
+      padding:18px;
+    }
+    .question-text {
+      font-size: 1.1rem;
+      text-align:left;
+      margin-bottom:12px;
+    }
+    .options {
+      display:grid;
+      gap:10px;
+      margin-top:10px;
+    }
+    .option {
+      display:flex;
+      align-items:center;
+      gap:10px;
+      background:#222;
+      border:1px solid #000;
+      border-radius:10px;
+      padding:10px;
+      transition: background .15s ease, border-color .15s ease;
+    }
+    .option:hover { background:#252525; border-color:#333; }
+    .option input[type="radio"] {
+      width:20px; height:20px;
+      accent-color: #ffcc00;
+      cursor:pointer;
+    }
+    .option label { flex:1; text-align:left; cursor:pointer; }
+
+    .actions {
+      margin-top:16px;
+      display:flex;
+      justify-content:center;
+      gap:10px;
+    }
+
+    .feedback {
+      margin-top:14px;
+      padding:10px 12px;
+      border-radius:10px;
+      border:1px solid #000;
+      background:#151515;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .badge {
+      min-width:88px;
+      text-align:center;
+      font-weight:800;
+      padding:6px 10px;
+      border-radius:8px;
+      border:2px solid #000;
+      box-shadow: inset 0 -2px 0 rgba(0,0,0,0.35);
+    }
+    .badge.correct {
+      background: linear-gradient(180deg, #34d27b 0%, #2ecc71 60%, #22b862 100%);
+      color:#061b0f;
+    }
+    .badge.wrong {
+      background: linear-gradient(180deg, #ffd84d 0%, #ffcc00 60%, #e6b800 100%);
+      color:#2b2200;
+    }
+    .feedback-text { flex:1; text-align:left; }
+
+    .progress {
+      margin-top:14px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      color:#bbb;
+      font-size:0.95rem;
+    }
+    .bar {
+      height:10px;
+      flex:1;
+      background:#222;
+      border:1px solid #000;
+      border-radius:999px;
+      overflow:hidden;
+    }
+    .bar > span {
+      display:block;
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, #ffcc00, #c81414);
+    }
+
+    .result-box {
+      background:#171717;
+      border:1px solid #000;
+      border-radius:12px;
+      padding:18px;
+    }
+    .score-line {
+      display:flex;
+      justify-content:space-between;
+      background:#202020;
+      border:1px solid #000;
+      border-radius:10px;
+      padding:10px 12px;
+      margin:8px 0;
+    }
+    .score-line strong { color: var(--yellow); }
+    .big-score {
+      font-size:2.2rem;
+      font-weight:900;
+      color: var(--yellow);
+      text-shadow: 2px 2px #000;
+      margin: 10px 0 4px;
+    }
+    .topic-title {
+      color: var(--yellow);
+      font-weight: 800;
+    }
+
+    /* Nova tela VÍDEOS */
+    #videos { display: none; }
+    #videos.active { display: block; }
+    .video-categories { margin-top: 20px; }
+    .video-cat { margin-bottom: 15px; }
+    .video-container { position: relative; width: 100%; height: 0; padding-bottom: 56.25%; margin-top: 15px; }
+    .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 10px; border: 2px solid #000; }
+
+    @media (max-width: 560px){
+      .card { padding:18px; }
+      .option { padding:8px; }
+      button { padding:10px 14px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="card">
+
+      <!-- Header -->
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <h1>Sou Brigadista</h1>
+      </div>
+
+      <!-- Tela inicial -->
+      <div id="home" class="screen active">
+        <p>Treinamento interativo para brigada de incêndio. Escolha um tema e comece agora.</p>
+        <div class="btn-row">
+          <button class="btn-secondary" onclick="showScreen('themes')">Iniciar</button>
+        </div>
+      </div>
+
+      <!-- Tela de temas - BOTÃO VÍDEOS AQUI EMBAIXO DO VERDADEIRO OU FALSO -->
+      <div id="themes" class="screen">
+        <h2>Seleção de temas</h2>
+        <div class="btn-row">
+          <button onclick="startQuiz('classes')">Classes de Incêndio</button>
+          <button onclick="startQuiz('socorros')">Primeiros Socorros</button>
+          <button onclick="startQuiz('vf')">Verdadeiro ou Falso</button>
+        </div>
+        <!-- BOTÃO VÍDEOS AQUI -->
+        <div class="btn-row">
+          <button class="btn-videos" onclick="showVideos()">📺 Vídeos</button>
+        </div>
+        <div class="btn-row">
+          <button class="btn-ghost" onclick="showScreen('home')">Voltar</button>
+        </div>
+      </div>
+
+      <!-- Tela de perguntas -->
+      <div id="quiz" class="screen">
+        <h2 id="quiz-title"></h2>
+
+        <div class="progress">
+          <span id="progress-text">Pergunta 1/10</span>
+          <div class="bar"><span id="progress-bar"></span></div>
+        </div>
+
+        <div id="question-container" class="question-box"></div>
+
+        <div class="actions">
+          <button class="btn-secondary" onclick="checkAnswer()">Confirmar</button>
+        </div>
+
+        <div id="feedback" class="feedback" style="display:none;">
+          <div id="feedback-badge" class="badge">STATUS</div>
+          <div id="feedback-text" class="feedback-text"></div>
+        </div>
+      </div>
+
+      <!-- NOVA TELA VÍDEOS -->
+      <div id="videos" class="screen">
+        <h2>Vídeos Educativos</h2>
+        <div class="video-categories">
+          <div class="video-cat">
+            <button class="btn-secondary" onclick="showVideo('tipos')">Tipos de Extintores</button>
+          </div>
+          <div class="video-cat">
+            <button onclick="showVideo('metodo')">Método de Extinção</button>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-ghost" onclick="showScreen('themes')">← Voltar aos Temas</button>
+        </div>
+
+        <!-- Container do vídeo -->
+        <div id="video-player" class="video-container" style="display:none;">
+          <iframe id="youtube-player" 
+                  src="" 
+                  frameborder="0" 
+                  allowfullscreen>
+          </iframe>
+        </div>
+      </div>
+
+      <!-- Tela de resultado -->
+      <div id="result" class="screen">
+        <h2>Resultado final</h2>
+        <div class="result-box">
+          <div class="big-score" id="score-percent">0%</div>
+          <div class="score-line">
+            <span>Total de perguntas</span>
+            <strong id="score-total">0</strong>
+          </div>
+          <div class="score-line">
+            <span>Acertos</span>
+            <strong id="score-right">0</strong>
+          </div>
+          <div class="score-line">
+            <span>Erros</span>
+            <strong id="score-wrong">0</strong>
+          </div>
+          <p style="margin-top:10px;">Tema: <span class="topic-title" id="score-topic">—</span></p>
+        </div>
+        <div class="btn-row">
+          <button onclick="showScreen('themes')">Voltar aos temas</button>
+          <button class="btn-secondary" onclick="restartQuiz()">Refazer tema</button>
+          <button class="btn-ghost" onclick="showScreen('home')">Tela inicial</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Banco de perguntas (igual)
+    const questions = {
+      classes: [
+        {question:"Qual classe envolve materiais sólidos como madeira e papel?",options:["Classe A","Classe B","Classe C","Classe D"],correct:0},
+        {question:"Qual classe envolve líquidos inflamáveis?",options:["Classe A","Classe B","Classe C","Classe D"],correct:1},
+        {question:"Qual classe envolve equipamentos elétricos energizados?",options:["Classe A","Classe B","Classe C","Classe D"],correct:2},
+        {question:"Qual classe envolve metais combustíveis (como magnésio)?",options:["Classe A","Classe B","Classe C","Classe D"],correct:3},
+        {question:"Extintor de água é indicado principalmente para:",options:["Classe A","Classe B","Classe C","Classe D"],correct:0},
+        {question:"Extintor de pó químico seco é comumente usado em:",options:["Classe A","Classe B","Classe C","Classes B e C"],correct:3},
+        {question:"Extintor de CO₂ é indicado principalmente para:",options:["Classe A","Classe B","Classe C","Classe D"],correct:2},
+        {question:"Classe K envolve incêndios em:",options:["Óleos e gorduras de cozinha","Metais combustíveis","Plásticos","Madeira"],correct:0},
+        {question:"Qual NÃO pertence à Classe B?",options:["Gasolina","Óleo diesel","Madeira","Álcool"],correct:2},
+        {question:"Classe D é mais comum em:",options:["Indústrias com metais","Residências","Escolas","Hospitais"],correct:0}
+      ],
+      socorros: [
+        {question:"Primeira ação em suspeita de parada cardiorrespiratória:",options:["Checar segurança da cena e pedir ajuda","Dar água","Massagear braços","Colocar em pé"],correct:0},
+        {question:"Número dos Bombeiros no Brasil:",options:["190","192","193","199"],correct:2},
+        {question:"Em queimadura térmica inicial:",options:["Aplicar pomada sem avaliação","Lavar com água corrente fria","Furar bolhas","Usar gelo diretamente"],correct:1},
+        {question:"Em fratura suspeita:",options:["Movimentar para aliviar dor","Imobilizar a área","Massagear região","Ignorar se dor for leve"],correct:1},
+        {question:"Engasgo em adulto consciente:",options:["Manobra de Heimlich","RCP imediata","Dar líquidos","Palmadas na cabeça"],correct:0},
+        {question:"Hemorragia externa intensa:",options:["Pressionar o local","Deixar sangrar para limpar","Lavar com álcool","Aplicar pó estranho"],correct:0},
+        {question:"Desmaio (síncope):",options:["Deitar e elevar pernas","Dar café forte","Sacudir a pessoa","Ignorar e aguardar"],correct:0},
+        {question:"Choque elétrico:",options:["Tocar na vítima rápido","Desligar a fonte de energia","Jogar água na pessoa","Pedir para levantar"],correct:1},
+        {question:"Intoxicação:",options:["Induzir vômito","Dar leite sem avaliação","Acionar emergência e manter vias aéreas","Ignorar se estiver consciente"],correct:2},
+        {question:"Parada respiratória:",options:["RCP apenas com compressões","Respiração de resgate se habilitado","Dar água","Massagem nas costas"],correct:1}
+      ],
+      vf: [
+        {question:"Extintor de água é indicado para incêndios elétricos.",options:["Verdadeiro","Falso"],correct:1},
+        {question:"Classe A envolve madeira e papel.",options:["Verdadeiro","Falso"],correct:0},
+        {question:"Classe B envolve líquidos inflamáveis.",options:["Verdadeiro","Falso"],correct:0},
+        {question:"Classe C envolve equipamentos elétricos energizados.",options:["Verdadeiro","Falso"],correct:0},
+        {question:"Classe D envolve metais combustíveis.",options:["Verdadeiro","Falso"],correct:0},
+        {question:"Classe K envolve óleos e gorduras de cozinha.",options:["Verdadeiro","Falso"],correct:0},
+        {question:"O número dos Bombeiros é 193.",options:["Verdadeiro","Falso"],correct:0},
+        {question:"Queimadura leve pode ser resfriada com água corrente.",options:["Verdadeiro","Falso"],correct:0},
+        {question:"Em fratura, deve-se imobilizar.",options:["Verdadeiro","Falso"],correct:0},
+        {question:"Na RCP, iniciar compressões quando indicado.",options:["Verdadeiro","Falso"],correct:0}
+      ]
+    };
+
+    // Estado
+    let currentQuiz = [];
+    let currentQuestionIndex = 0;
+    let scoreCount = 0;
+    let currentTheme = null;
+
+    // UI helpers
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+    }
+
+    // MOSTRAR VÍDEOS
+    function showVideos() {
+      showScreen('videos');
+    }
+
+    function showVideo(type) {
+      const player = document.getElementById('youtube-player');
+      const container = document.getElementById('video-player');
+      
+      if (type === 'tipos') {
+        // URL EMBED do YouTube - abre dentro do app
+        player.src = 'https://www.youtube.com/embed/OvWdd8T2UK0?autoplay=1&rel=0';
+      } else {
+        player.src = 'https://www.youtube.com/embed/yJPMCIMeeQo?autoplay=1&rel=0'; // Placeholder
+      }
+      
+      container.style.display = 'block';
+    }
+
+    function updateProgress() {
+      const total = currentQuiz.length;
+      const current = Math.min(currentQuestionIndex + 1, total);
+      document.getElementById('progress-text').textContent = `Pergunta ${current}/${total}`;
+      const pct = Math.round((current - 1) * 100 / total);
+      document.getElementById('progress-bar').style.width = pct + '%';
+    }
+
+    // Fluxo de quiz (igual)
+    function startQuiz(theme) {
+      currentTheme = theme;
+      currentQuiz = questions[theme];
+      currentQuestionIndex = 0;
+      scoreCount = 0;
+
+      document.getElementById('quiz-title').textContent =
+        theme === 'classes' ? 'Classes de Incêndio' :
+        theme === 'socorros' ? 'Primeiros Socorros' :
+        'Verdadeiro ou Falso';
+
+      showScreen('quiz');
+      loadQuestion();
+      updateProgress();
+    }
+
+    function loadQuestion() {
+      const q = currentQuiz[currentQuestionIndex];
+      const container = document.getElementById('question-container');
+
+      let html = `<div class="question-text">${q.question}</div><div class="options">`;
+      q.options.forEach((opt, i) => {
+        html += `
+          <div class="option">
+            <input id="opt-${i}" type="radio" name="answer" value="${i}">
+            <label for="opt-${i}">${opt}</label>
+          </div>
+        `;
+      });
+      html += `</div>`;
+      container.innerHTML = html;
+
+      const fb = document.getElementById('feedback');
+      fb.style.display = 'none';
+      document.getElementById('feedback-text').textContent = '';
+      document.getElementById('feedback-badge').className = 'badge';
+      document.getElementById('feedback-badge').textContent = 'STATUS';
+    }
+
+    function checkAnswer() {
+      const selected = document.querySelector('input[name="answer"]:checked');
+      const fb = document.getElementById('feedback');
+      const fbBadge = document.getElementById('feedback-badge');
+      const fbText = document.getElementById('feedback-text');
+
+      if (!selected) {
+        fb.style.display = 'flex';
+        fbBadge.className = 'badge wrong';
+        fbBadge.textContent = 'ATENÇÃO';
+        fbText.textContent = 'Selecione uma alternativa para confirmar.';
+        return;
+      }
+
+      const answer = parseInt(selected.value, 10);
+      const correctIndex = currentQuiz[currentQuestionIndex].correct;
+      const correctText = currentQuiz[currentQuestionIndex].options[correctIndex];
+
+      if (answer === correctIndex) {
+        scoreCount++;
+        fb.style.display = 'flex';
+        fbBadge.className = 'badge correct';
+        fbBadge.textContent = 'CORRETO';
+        fbText.textContent = 'Bom trabalho! Vamos para a próxima.';
+      } else {
+        fb.style.display = 'flex';
+        fbBadge.className = 'badge wrong';
+        fbBadge.textContent = 'ERRADO';
+        fbText.textContent = `Resposta correta: ${correctText}`;
+      }
+
+      setTimeout(nextQuestion, 3000);
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      const total = currentQuiz.length;
+
+      if (currentQuestionIndex >= total) {
+        return showResult();
+      }
+
+      loadQuestion();
+      updateProgress();
+    }
+
+    function showResult() {
+      const total = currentQuiz.length;
+      const right = scoreCount;
+      const wrong = total - right;
+      const percent = Math.round((right / total) * 100);
+
+      document.getElementById('score-total').textContent = total;
+      document.getElementById('score-right').textContent = right;
+      document.getElementById('score-wrong').textContent = wrong;
+      document.getElementById('score-percent').textContent = percent + '%';
+      document.getElementById('score-topic').textContent =
+        currentTheme === 'classes' ? 'Classes de Incêndio' :
+        currentTheme === 'socorros' ? 'Primeiros Socorros' :
+        'Verdadeiro ou Falso';
+
+      document.getElementById('progress-bar').style.width = '100%';
+      document.getElementById('progress-text').textContent = `Concluído ${total}/${total}`;
+
+      showScreen('result');
+    }
+
+    function restartQuiz() {
+      startQuiz(currentTheme);
+    }
+  </script>
+</body>
+</html>
